@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRABAJO PRÁCTICO - LIBONATI - BURGUÉS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            background-color: #e652f3;
+        }
+
+        h1 {
+            padding: 30px;
+            background-color: rgb(22, 206, 206);
+            color: white;
+            text-align: center;
+        }
+
+        form {
+            width: 70%;
+            margin: 20px auto;
+            border: 5px solid rgb(54, 18, 211);
+            padding: 30px;
+            background-color: wheat;
+            text-align: center;
+        }
+
+        form div {            
+            margin-bottom: 20px;
+            text-align: center;
+            background-color: wheat;
+        }
+
+        div input, div label, div select {
+            background: wheat;
+        }
+        
+
+        .datos {
+            border: 5px solid rgb(22, 206, 206);
+            padding: 20px;
+            margin: 20px auto;
+            width: 600px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .navbar-LOGO {
+            margin: 20px;
+        }
+        
+        .nosotros {
+            border-radius: 20px;
+            background-color: rgb(22, 206, 206);
+            margin: 20px;
+            padding: 20px;
+        }
+        
+        input {
+            border: 2px solid rgb(22, 206, 206);
+            padding: 10px;
+        }
+        
+        .borrar {
+            background-color: #FF6B6B;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a class="navbar-LOGO" href="index.html"><img src="img/LOGO.png" alt="Logo"></a>
+            <a class="nosotros" href="nosotros.html">CONOCENOS</a>
+        </div>
+    </nav>
+
+    <h1>MIS ÚLTIMOS TRABAJOS</h1>
+    
+    <form>
+        <div>
+            <input type="text" id="trabajo" placeholder="NOMBRE DE TP" required>
+        </div>
+      
+        <div>
+            <select>
+                <option value="UNO">1</option>
+                <option value="DOS">2</option>
+                <option value="TRES">3</option>
+                <option value="CUATRO">4</option>
+                <option value="CINCO">5</option>
+                <option value="SEIS">6</option>
+                <option value="SIETE">7</option>
+                <option value="OCHO">8</option>
+                <option value="NUEVE">9</option>
+                <option value="DIEZ">10</option>
+            </select>
+        </div> 
+
+        <div>
+            <input type="radio" value="Aprobado" id="Aprobado" name="aprobacion" required>
+            <label for="Aprobado">Aprobado</label>
+        </div>
+        <div>
+            <input type="radio" value="Desaprobado" id="Desaprobado" name="aprobacion" required>
+            <label for="Desaprobado">Desaprobado</label>
+        </div>
+        <div>
+            <input type="radio" value="Recuperar" id="Recuperar" name="aprobacion" required>
+            <label for="Recuperar">Recuperar</label>
+        </div>
+
+        <div>
+            <input type="submit" value="REGISTRAR">
+        </div>
+    </form>
+
+    <div id="contenedor"></div>
+
+    <script src="js/code.jquery.com_jquery-3.7.0.js"></script>
+
+    <script> 
+        $("form").on("submit", function(event) {
+            event.preventDefault();
+
+            let trabajo = $("#trabajo").val();
+            let nota = $('option:checked').val();
+            let aprobacion = $('input[type="radio"]:checked').val();
+            let nuevo_div = $("<div></div>");
+
+            nuevo_div.append(
+                `<h2>${trabajo}</h2>
+                 <p>${nota}</p>
+                 <p>${aprobacion}</p>
+                 <button class="borrar">x</button>`
+            ).addClass("datos");
+
+            $("form")[0].reset();
+            $("#contenedor").prepend(nuevo_div);
+
+          
+            let datosGuardados = localStorage.getItem("datos") || "[]";
+            let datos = JSON.parse(datosGuardados);
+            datos.push({ trabajo, nota, aprobacion });
+            localStorage.setItem("datos", JSON.stringify(datos));
+        });
+
+        $(document).on("click", ".borrar", function() {
+            $(this).parent().remove();
+
+          
+            let trabajo = $(this).siblings("h2").text();
+            let nota = $(this).siblings("p").eq(0).text();
+            let aprobacion = $(this).siblings("p").eq(1).text();
+
+            let datosGuardados = localStorage.getItem("datos");
+            if (datosGuardados) {
+                let datos = JSON.parse(datosGuardados);
+                let index = datos.findIndex(item => item.trabajo === trabajo && item.nota === nota && item.aprobacion === aprobacion);
+                if (index !== -1) {
+                    datos.splice(index, 1);
+                    localStorage.setItem("datos", JSON.stringify(datos));
+                }
+            }
+        });
+
+       
+        let datosGuardados = localStorage.getItem("datos");
+        if (datosGuardados) {
+            let datos = JSON.parse(datosGuardados);
+            datos.forEach(({ trabajo, nota, aprobacion }) => {
+                let nuevoDiv = $("<div></div>").addClass("datos");
+                nuevoDiv.append(
+                    `<h2>${trabajo}</h2>
+                     <p>${nota}</p>
+                     <p>${aprobacion}</p>
+                     <button class="borrar">x</button>`
+                );
+                $("#contenedor").prepend(nuevoDiv);
+            });
+        }
+    </script>
+</body>
+</html>
